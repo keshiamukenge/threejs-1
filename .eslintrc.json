@@ -4,6 +4,9 @@
         "es2021": true
     },
     "extends": "eslint:recommended",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
     "parserOptions": {
         "ecmaVersion": 13,
         "sourceType": "module"
