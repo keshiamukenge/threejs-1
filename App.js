@@ -45,6 +45,11 @@ export default class Sketch {
         this.material = new THREE.MeshNormalMaterial();
 
         this.material = new ShaderMaterial({
+            uniforms: {
+                time: {
+                    value: 0
+                }
+            },
             side: THREE.DoubleSide,
             fragmentShader: fragment,
             vertexShader: vertex,
@@ -59,6 +64,8 @@ export default class Sketch {
         this.time += 0.05;
         this.mesh.rotation.x = this.time / 2000;
         this.mesh.rotation.y = this.time / 1000;
+
+        this.material.uniforms.time.value = this.time;
 
         this.renderer.render(this.scene, this.camera);
         window.requestAnimationFrame(this.render.bind(this));
