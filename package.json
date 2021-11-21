@@ -13,6 +13,11 @@
   "devDependencies": {
     "node-sass": "^6.0.1",
     "parcel-bundler": "^1.9.4",
-    "sass": "^1.43.4"
+    "sass": "^1.43.4",
+    "three": "^0.128.0"
+  },
+  "dependencies": {
+    "src": "^1.1.2",
+    "tree": "^0.1.3"
   }
 }

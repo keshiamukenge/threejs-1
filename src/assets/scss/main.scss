@@ -3,20 +3,33 @@ $main-color: #ddbea9;
 html {
   background-color: $main-color;
   text-align: center;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
 
   body {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+
+    canvas  {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
 
     h1 {
       font-size: 30px;
       font-family: "Arial";
       width: fit-content;
       position: absolute;
-      top: 50%;
+      top: 10%;
       left: 50%;
       transform: translate(-50%, -50%);
+      color: $main-color;
     }
   }
 }
