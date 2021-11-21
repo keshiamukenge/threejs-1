@@ -12,7 +12,6 @@ export default class Sketch {
 
         this.camera = new THREE.PerspectiveCamera(100, this.width / this.height, 0.01, 5);
         this.camera.position.z = 0.5; 
-        console.log(this.camera.position.z);
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: true
@@ -53,7 +52,7 @@ export default class Sketch {
             side: THREE.DoubleSide,
             fragmentShader: fragment,
             vertexShader: vertex,
-            wireframe: true,
+            wireframe: false,
         });
 
         this.mesh = new THREE.Mesh(this.geometry, this.material);
