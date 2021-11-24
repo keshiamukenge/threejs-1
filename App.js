@@ -4,15 +4,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export default class App {
     constructor() {
-        //Cursor
-        /* this.cursor = {
-            x: 0,
-            y: 0
-        }
-        this.calcCursorPos(); */
-
         this.canvas = document.querySelector('.webgl');
-        this.sizes = { width: 800, height: 600 }
+        this.sizes = { 
+            width: window.innerWidth,
+            height: window.innerHeight
+        }
+        this.resizeScene();
 
         //Object
         this.geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -30,23 +27,11 @@ export default class App {
         this.controls = new OrbitControls(this.camera, this.canvas);
         this.enableDampingControl();
 
+        //Double click
+        this.onDoubleClick();
+
         //Time
         this.clock = new THREE.Clock();
-
-        //GSAP
-        /* GSAP.to(this.cube.rotation,{
-            duration: 1,
-            delay: 1,
-            repeat: 105,
-            x: 2,
-            y: 2
-        }); */
-
-        /* GSAP.to(this.cube.rotation, {
-            duration: 1,
-            delay: 2,
-            x: 0
-        }); */
 
         //Scene
         this.scene = new THREE.Scene();
@@ -56,10 +41,32 @@ export default class App {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas
         });
-        this.rendererSize();
+        this.renderer.setSize(this.sizes.width, this.sizes.height);
         
         //Animate cube
         this.animateCube();
+    }
+
+    resizeScene() {
+        window.addEventListener('resize', () => {
+            this.sizes.width = window.innerWidth;
+            this.sizes.height = window.innerHeight;
+
+            this.camera.aspect = this.sizes.width / this.sizes.height;
+            this.camera.updateProjectionMatrix();
+
+            this.rendererSize();
+        });
+    }
+
+    onDoubleClick() {
+        window.addEventListener('dblclick', () => {
+            if(!document.fullscreenElement) {
+                this.canvas.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
     }
 
     calcCursorPos() {
@@ -78,22 +85,16 @@ export default class App {
     }
 
     cameraPos() {
-        /* this.camera.rotation.reorder('XYZ'); */
         this.camera.position.set(2, 2, 2);
     }
 
     rendererSize() {
-        this.renderer.setSize(this.sizes.width, this.sizes.height,);
+        this.renderer.setSize(this.sizes.width, this.sizes.height);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     }
 
     animateCube() {
         this.elapsedTime = this.clock.getElapsedTime();
-
-        /* this.cube.rotation.x = this.elapsedTime * Math.PI * 0.2;
-        this.cube.rotation.y = this.elapsedTime * Math.PI * 0.2; */
-
-        /* this.camera.position.x = Math.sin(this.cursor.x * Math.PI * 2) * 3;
-        this.camera.position.Z = Math.cos(this.cursor.x * Math.PI * 2) * 3; */
         this.camera.lookAt(this.cube.position);
 
         this.controls.update();
