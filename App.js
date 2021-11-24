@@ -3,6 +3,8 @@ import GSAP from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GUI } from 'lil-gui';
 
+import img from './src/assets/medias/img.jpeg'
+
 export default class App {
     constructor() {
         //Control pannel
@@ -10,7 +12,25 @@ export default class App {
         this.options = {
             color: 0xff0000
         }
-        
+
+        //Texture
+        this.loadingManager = new THREE.LoadingManager();
+        this.controlLoadingManager();
+        this.textureLoader = new THREE.TextureLoader();
+        this.texture = this.textureLoader.load(
+           img,
+           () => {
+               console.log('loaded');
+           },
+           () => {
+               console.log('progress');
+           },
+           () => {
+               console.error('error');
+           }
+        )
+        this.texture.generateMidmaps = false;
+        this.texture.magFilter = THREE.NearestFilter;
 
         this.canvas = document.querySelector('.webgl');
         this.sizes = { 
@@ -22,7 +42,7 @@ export default class App {
         //Object
         this.geometry = new THREE.BoxGeometry(1, 1, 1);
         this.material = new THREE.MeshBasicMaterial({
-            color: 'red',
+            map: this.texture,
             wireframe: false
         });
         this.cube = new THREE.Mesh(this.geometry, this.material);
@@ -35,8 +55,8 @@ export default class App {
         this.cameraPos();
 
         //Controls
-        this.controls = new OrbitControls(this.camera, this.canvas);
-        this.enableDampingControl();
+        /* this.controls = new OrbitControls(this.camera, this.canvas);
+        this.enableDampingControl(); */
 
         //Time
         this.clock = new THREE.Clock();
@@ -66,11 +86,11 @@ export default class App {
             .name('cube x')
         this.gui.add(this.cube.position, 'y')
             .min(-3)
-            .max(3)
+            .max(5)
             .step(0.01)
             .name('cube y')
         this.gui.add(this.cube.position, 'z')
-            .min(-3)
+            .min(-10)
             .max(3)
             .step(0.01)
             .name('cube z')
@@ -83,6 +103,12 @@ export default class App {
             .onChange(() => {
                 this.material.color.set(this.options.color);
             })
+    }
+
+    controlLoadingManager() {
+        this.loadingManager.onStart = () => { console.log('start')};
+        this.loadingManager.onProgress = () => { console.log('in progress')};
+        this.loadingManager.onError = () => { console.log('error')};
     }
 
     resizeScene() {
@@ -125,7 +151,9 @@ export default class App {
         this.elapsedTime = this.clock.getElapsedTime();
         this.camera.lookAt(this.cube.position);
 
-        this.controls.update();
+        this.cube.rotation.x = this.elapsedTime * Math.PI * 0.3;
+        this.cube.rotation.y = this.elapsedTime * Math.PI * 0.3;
+        /* this.controls.update(); */
 
         this.renderer.render(this.scene, this.camera);
 
