@@ -12,8 +12,18 @@ export default class App {
         this.resizeScene();
 
         //Object
-        this.geometry = new THREE.BoxGeometry(1, 1, 1);
-        this.material = new THREE.MeshBasicMaterial({ color: 'red' });
+        this.posArray = new Float32Array([
+            0, 0, 0,
+            0, 1, 0,
+            1, 0, 0,
+        ]);
+        this.verticesPos = new THREE.BufferAttribute(this.posArray, 3);
+        this.geometry = new THREE.BufferGeometry();
+        this.geometry.setAttribute('position', this.verticesPos);
+        this.material = new THREE.MeshBasicMaterial({
+            color: 'red',
+            wireframe: false
+        });
         this.cube = new THREE.Mesh(this.geometry, this.material);
         /* this.cubePos(); */
 
