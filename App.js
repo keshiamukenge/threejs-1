@@ -1,9 +1,17 @@
 import * as THREE from 'three';
 import GSAP from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GUI } from 'lil-gui';
 
 export default class App {
     constructor() {
+        //Control pannel
+        this.gui = new GUI({ closed: true });
+        this.options = {
+            color: 0xff0000
+        }
+        
+
         this.canvas = document.querySelector('.webgl');
         this.sizes = { 
             width: window.innerWidth,
@@ -12,14 +20,7 @@ export default class App {
         this.resizeScene();
 
         //Object
-        this.posArray = new Float32Array([
-            0, 0, 0,
-            0, 1, 0,
-            1, 0, 0,
-        ]);
-        this.verticesPos = new THREE.BufferAttribute(this.posArray, 3);
-        this.geometry = new THREE.BufferGeometry();
-        this.geometry.setAttribute('position', this.verticesPos);
+        this.geometry = new THREE.BoxGeometry(1, 1, 1);
         this.material = new THREE.MeshBasicMaterial({
             color: 'red',
             wireframe: false
@@ -37,11 +38,11 @@ export default class App {
         this.controls = new OrbitControls(this.camera, this.canvas);
         this.enableDampingControl();
 
-        //Double click
-        this.onDoubleClick();
-
         //Time
         this.clock = new THREE.Clock();
+
+        //Control pannel property
+        this.addControlProperty();
 
         //Scene
         this.scene = new THREE.Scene();
@@ -57,6 +58,33 @@ export default class App {
         this.animateCube();
     }
 
+    addControlProperty() {
+        this.gui.add(this.cube.position, 'x')
+            .min(-3)
+            .max(3)
+            .step(0.01)
+            .name('cube x')
+        this.gui.add(this.cube.position, 'y')
+            .min(-3)
+            .max(3)
+            .step(0.01)
+            .name('cube y')
+        this.gui.add(this.cube.position, 'z')
+            .min(-3)
+            .max(3)
+            .step(0.01)
+            .name('cube z')
+        this.gui.add(this.cube, 'visible')
+            .name('visible')
+        this.gui.add(this.material, 'wireframe')
+            .name('wireframe')
+        this.gui.addColor(this.options, 'color')
+            .name('color')
+            .onChange(() => {
+                this.material.color.set(this.options.color);
+            })
+    }
+
     resizeScene() {
         window.addEventListener('resize', () => {
             this.sizes.width = window.innerWidth;
@@ -66,16 +94,6 @@ export default class App {
             this.camera.updateProjectionMatrix();
 
             this.rendererSize();
-        });
-    }
-
-    onDoubleClick() {
-        window.addEventListener('dblclick', () => {
-            if(!document.fullscreenElement) {
-                this.canvas.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
         });
     }
 
