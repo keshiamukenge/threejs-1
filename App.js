@@ -1,36 +1,17 @@
 import * as THREE from 'three';
-import GSAP from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GUI } from 'lil-gui';
-
-import img from './src/assets/medias/img.jpeg'
+import img from './src/assets/medias/img.jpeg';
+import arbre from './src/assets/medias/arbre.jpeg';
+import pierre from './src/assets/medias/pierre.jpeg';
+import plume from './src/assets/medias/plume.jpeg';
 
 export default class App {
     constructor() {
-        //Control pannel
-        this.gui = new GUI({ closed: true });
-        this.options = {
-            color: 0xff0000
-        }
-
         //Texture
-        this.loadingManager = new THREE.LoadingManager();
-        this.controlLoadingManager();
-        this.textureLoader = new THREE.TextureLoader();
-        this.texture = this.textureLoader.load(
-           img,
-           () => {
-               console.log('loaded');
-           },
-           () => {
-               console.log('progress');
-           },
-           () => {
-               console.error('error');
-           }
-        )
-        this.texture.generateMidmaps = false;
-        this.texture.magFilter = THREE.NearestFilter;
+        this.textureLoader = new THREE.TextureLoader()
+        this.arbreTexture = this.textureLoader.load(arbre)
+        this.pierreTexture = this.textureLoader.load(pierre)
+        this.plumeTexture = this.textureLoader.load(plume)
 
         this.canvas = document.querySelector('.webgl');
         this.sizes = { 
@@ -39,19 +20,56 @@ export default class App {
         }
         this.resizeScene();
 
+        //MeshBasicMaterial
+        this.material = new THREE.MeshBasicMaterial();
+        this.material.map = this.arbreTexture;
+        /* this.material.color = new THREE.Color('red'); */
+        /* this.material.transparent = true;
+        this.material.opacity = 0.8; */
+        this.material.alphaMap = this.arbreTexture;
+        this.material.side = THREE.DoubleSide;
+        this.material.wireframe = false;
+
+        //MeshNormalMaterial
+        /* this.material = new THREE.MeshNormalMaterial();
+        this.material.map = this.arbreTexture;
+        this.material.side = THREE.DoubleSide;
+        this.material.wireframe = true;
+        this.material.flatShading = true; */
+
+        //MeshMatcapMaterial
+        /* this.material = new THREE.MeshMatcapMaterial();
+        this.material.matcap = this.arbreTexture;
+        this.material.side = THREE.DoubleSide; */
+
+        //MeshStandardMaterial
+        /* this.material = new THREE.MeshStandardMaterial(); */
+       /*  this.material.map = this.arbreTexture; */
+        /* this.material.side = THREE.DoubleSide;
+        this.material.metalness = 0.45;
+        this.material.roughness = 0.65; */
+
         //Object
-        this.geometry = new THREE.BoxGeometry(1, 1, 1);
-        this.material = new THREE.MeshBasicMaterial({
-            map: this.texture,
-            wireframe: false
-        });
-        this.cube = new THREE.Mesh(this.geometry, this.material);
-        /* this.cubePos(); */
+        this.sphere = new THREE.Mesh(
+            new THREE.SphereBufferGeometry(0.5, 16, 16),
+            this.material
+        );
+
+        this.plane = new THREE.Mesh(
+            new THREE.PlaneGeometry(1, 1, 12, 12, 13, 13),
+            this.material
+        );
+
+        this.torus = new THREE.Mesh(
+            new THREE.TorusBufferGeometry(0.3, 0.2, 16, 32),
+            this.material
+        );
+
+        this.objectPos();
 
         //Camera
-        this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 1, 1000);
+        this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
         this.aspectRatio = this.sizes.width / this.sizes.height;
-        /* this.camera = new THREE.OrthographicCamera(-1 * this.aspectRatio, 1 * this.aspectRatio, 1, -1, 0.1, 1000); */
         this.cameraPos();
 
         //Controls
@@ -61,12 +79,9 @@ export default class App {
         //Time
         this.clock = new THREE.Clock();
 
-        //Control pannel property
-        this.addControlProperty();
-
         //Scene
         this.scene = new THREE.Scene();
-        this.scene.add(this.cube, this.camera);
+        this.scene.add(this.sphere, this.plane, this.torus, this.camera);
 
         //Renderer
         this.renderer = new THREE.WebGLRenderer({
@@ -74,41 +89,8 @@ export default class App {
         });
         this.renderer.setSize(this.sizes.width, this.sizes.height);
         
-        //Animate cube
-        this.animateCube();
-    }
-
-    addControlProperty() {
-        this.gui.add(this.cube.position, 'x')
-            .min(-3)
-            .max(3)
-            .step(0.01)
-            .name('cube x')
-        this.gui.add(this.cube.position, 'y')
-            .min(-3)
-            .max(5)
-            .step(0.01)
-            .name('cube y')
-        this.gui.add(this.cube.position, 'z')
-            .min(-10)
-            .max(3)
-            .step(0.01)
-            .name('cube z')
-        this.gui.add(this.cube, 'visible')
-            .name('visible')
-        this.gui.add(this.material, 'wireframe')
-            .name('wireframe')
-        this.gui.addColor(this.options, 'color')
-            .name('color')
-            .onChange(() => {
-                this.material.color.set(this.options.color);
-            })
-    }
-
-    controlLoadingManager() {
-        this.loadingManager.onStart = () => { console.log('start')};
-        this.loadingManager.onProgress = () => { console.log('in progress')};
-        this.loadingManager.onError = () => { console.log('error')};
+        //Animate object
+        this.animateObject();
     }
 
     resizeScene() {
@@ -123,15 +105,9 @@ export default class App {
         });
     }
 
-    calcCursorPos() {
-        window.addEventListener('mousemove', (e) => {
-            this.cursor.x = e.clientX / this.sizes.width - 0.5;
-            this.cursor.y = - (e.clientY / this.sizes.height - 0.5);
-        });
-    }
-
-    cubePos() {
-        this.cube.position.set(1, 1, 1);
+    objectPos() {
+        this.sphere.position.x = - 1.5;
+        this.torus.position.x = 1.5;
     }
 
     enableDampingControl() {
@@ -147,18 +123,23 @@ export default class App {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     }
 
-    animateCube() {
+    animateObject() {
         this.elapsedTime = this.clock.getElapsedTime();
-        this.camera.lookAt(this.cube.position);
+        this.camera.lookAt(this.plane.position);
 
-        this.cube.rotation.x = this.elapsedTime * Math.PI * 0.3;
-        this.cube.rotation.y = this.elapsedTime * Math.PI * 0.3;
+        this.sphere.rotation.x = this.elapsedTime * Math.PI * 0.1;
+        this.sphere.rotation.y = this.elapsedTime * Math.PI * 0.1;
+        this.plane.rotation.x = this.elapsedTime * Math.PI * 0.1;
+        this.plane.rotation.y = this.elapsedTime * Math.PI * 0.1;
+        this.torus.rotation.x = this.elapsedTime * Math.PI * 0.1;
+        this.torus.rotation.y = this.elapsedTime * Math.PI * 0.1;
+
         /* this.controls.update(); */
 
         this.renderer.render(this.scene, this.camera);
 
         window.requestAnimationFrame(() => {
-            this.animateCube();
+            this.animateObject();
         });
     }
 }

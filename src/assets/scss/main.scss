@@ -1,6 +1,4 @@
-
 $main-color: #000814;
-
 
 * {
   margin: 0;
@@ -10,13 +8,13 @@ $main-color: #000814;
 html {
   background-color: $main-color;
   text-align: center;
-  overflow: scroll;
+  overflow: hidden;
 
   body {
     position: relative;
     width: 100vw;
     height: 100vh;
-    overflow: scroll;
+    overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 1fr 1fr 1fr;
