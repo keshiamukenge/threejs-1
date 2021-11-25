@@ -1,4 +1,6 @@
-$main-color: #ddbea9;
+
+$main-color: #000814;
+
 
 * {
   margin: 0;
@@ -8,26 +10,27 @@ $main-color: #ddbea9;
 html {
   background-color: $main-color;
   text-align: center;
-  overflow: hidden;
+  overflow: scroll;
 
   body {
     position: relative;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    overflow: scroll;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr 1fr 1fr;
 
     canvas {
       outline: none;
     }
 
-    h1 {
-      font-size: 30px;
-      font-family: "Arial";
+    h2 {
+      font-size: 50px;
+      font-family: "Playfair Display";
       width: fit-content;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      color: white;
+      text-transform: uppercase;
     }
   }
 }
