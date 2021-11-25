@@ -31,14 +31,14 @@ export default class App {
 
         //Object
         this.plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(1, 1, 12, 12, 13, 13),
+            new THREE.PlaneGeometry(1, 1, 60, 60),
             this.material
         );
 
         this.objectPos();
 
         //Camera
-        this.camera = new THREE.PerspectiveCamera(35, this.sizes.width / this.sizes.height, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
         this.aspectRatio = this.sizes.width / this.sizes.height;
         this.cameraPos();
 
@@ -97,8 +97,8 @@ export default class App {
         this.elapsedTime = this.clock.getElapsedTime();
         this.camera.lookAt(this.plane.position);
 
-        /* this.plane.rotation.x = this.elapsedTime * Math.PI * 0.1; */
-        /* this.plane.rotation.y = this.elapsedTime * Math.PI * 0.1; */
+        /* this.plane.rotation.x = this.elapsedTime * Math.PI * 0.1;
+        this.plane.rotation.y = this.elapsedTime * Math.PI * 0.1; */
 
         /* this.controls.update(); */
 
